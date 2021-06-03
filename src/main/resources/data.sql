@@ -49,6 +49,10 @@ values (8,'Pago restaurante','pago restaurante','2021-07-12','2021-07-12',2000,4
 insert into movimiento(id,concepto,descripcion,fecha,fecha_valor,importe,id_categoria,id_cuenta,id_tarjeta)
 values (9,'Retirada de efectivo','retirada de efectivo','2021-08-12','2021-08-12',300,4,1,2221);
 
+insert into prestamo(id,cantidad,duracion,tipo_interes)
+values(1,2000,6,5);
+
+insert into prestamo_cuentas (prestamo_id, cuenta_id) values (1,1);
 
 
 

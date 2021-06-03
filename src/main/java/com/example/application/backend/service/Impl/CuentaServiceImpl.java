@@ -38,7 +38,7 @@ public class CuentaServiceImpl implements CuentaService {
 
     @Override
     public Cuenta saveCuenta(Cuenta cuenta) {
-        log.info("createTag");
+
         if(ObjectUtils.isEmpty(cuenta))
             return null;
 

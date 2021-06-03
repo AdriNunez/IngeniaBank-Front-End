@@ -41,5 +41,7 @@ public class PrestamosView  extends HorizontalLayout {
         columnLayout.add(description, 3);
         horizontalLayout.add(columnLayout);
         add(horizontalLayout);
+
+
     }
 }

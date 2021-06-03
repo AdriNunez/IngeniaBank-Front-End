@@ -55,6 +55,9 @@ public class Cuenta extends AbstractEntity {
     @ManyToMany(mappedBy = "cuentas", cascade = CascadeType.ALL, fetch = FetchType.EAGER )
     private List<Usuario> usuarios = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "cuentas")
+    private List<Prestamo> prestamos = new ArrayList<>();
+
 
 
     public Cuenta() {
