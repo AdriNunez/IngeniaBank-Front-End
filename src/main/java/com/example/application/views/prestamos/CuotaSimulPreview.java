@@ -13,13 +13,14 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class CuotaSimulPreview extends Dialog {
 
 
     private PrestamoService prestamoService;
-    BigInteger cantidad;
+    BigDecimal cantidad;
     Integer tiempo ;
     String periodo;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -33,9 +34,9 @@ public class CuotaSimulPreview extends Dialog {
 
 //    private Prestamo prestamo;
 
-    public CuotaSimulPreview(Integer t, String p) {
+    public CuotaSimulPreview(Integer t, String p, BigDecimal value) {
         super();
-        this.cantidad = cantidad;
+        cantidad = value;
         tiempo = t;
         periodo = p;
         System.out.println("entran los valores" + cantidad + tiempo + periodo);
@@ -77,7 +78,7 @@ public class CuotaSimulPreview extends Dialog {
         return new H3("Resultado Prestamo Simulacion");
     }
 
-    private HorizontalLayout createCard(BigInteger b, Integer t, String p) {
+    private HorizontalLayout createCard(BigDecimal b, Integer t, String p) {
 
         HorizontalLayout card = new HorizontalLayout();
         card.addClassName("card");
