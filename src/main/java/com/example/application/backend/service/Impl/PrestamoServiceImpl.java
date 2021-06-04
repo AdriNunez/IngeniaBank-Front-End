@@ -1,5 +1,7 @@
 package com.example.application.backend.service.Impl;
 
+import com.example.application.backend.dao.PrestamoDAO;
+import com.example.application.backend.dao.impl.PrestamoDAOImpl;
 import com.example.application.backend.model.Prestamo;
 import com.example.application.backend.repository.PrestamoRepository;
 import com.example.application.backend.service.PrestamoService;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class PrestamoServiceImpl implements PrestamoService {
 
     private final PrestamoRepository prestamoRepository;
+    private final PrestamoDAO prestamoDAO;
 
-    public PrestamoServiceImpl(PrestamoRepository prestamoRepository) {
+    public PrestamoServiceImpl(PrestamoRepository prestamoRepository, PrestamoDAO prestamoDAO) {
         this.prestamoRepository = prestamoRepository;
+        this.prestamoDAO = prestamoDAO;
     }
 
     @Override
@@ -24,9 +28,10 @@ public class PrestamoServiceImpl implements PrestamoService {
     }
 
     @Override
-    public Optional<Prestamo> findById(Long id) {
-        return prestamoRepository.findById(id);
+    public Prestamo findPrestamoById(Long id) {
+        return prestamoDAO.findPrestamoById(id);
     }
+
 
     @Override
     public Prestamo savePrestamo(Prestamo prestamo) {
@@ -47,5 +52,11 @@ public class PrestamoServiceImpl implements PrestamoService {
     @Override
     public List<Prestamo> findPrestamosByCuenta(Long numeroCuenta) {
         return null;
+    }
+
+    @Override
+    public Optional<Prestamo> findById(Long id) {
+
+        return prestamoRepository.findById(id);
     }
 }

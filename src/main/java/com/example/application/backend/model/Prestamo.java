@@ -35,4 +35,38 @@ public class Prestamo extends  AbstractEntity{
 
     private List<Cuenta> cuentas = new ArrayList<>();
 
+    public Prestamo() {
+    }
+
+    public Double getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Double cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public Duracion getDuracion() {
+        return duracion;
+    }
+
+    public void setDuracion(Duracion duracion) {
+        this.duracion = duracion;
+    }
+
+    public Tipo getTipoInteres() {
+        return tipoInteres;
+    }
+
+    public void setTipoInteres(Tipo tipoInteres) {
+        this.tipoInteres = tipoInteres;
+    }
+
+    public List<Cuenta> getCuentas() {
+        return cuentas;
+    }
+
+    public void setCuentas(List<Cuenta> cuentas) {
+        this.cuentas = cuentas;
+    }
 }
