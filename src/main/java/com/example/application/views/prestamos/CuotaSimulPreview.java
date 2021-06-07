@@ -1,15 +1,18 @@
 package com.example.application.views.prestamos;
 
+import com.example.application.backend.model.Prestamo;
+import com.example.application.backend.service.CuentaService;
 import com.example.application.backend.service.PrestamoService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +21,16 @@ import java.math.BigInteger;
 
 public class CuotaSimulPreview extends Dialog {
 
+    CuentaService cuentaService;
+    PrestamoService prestamoService;
+    Prestamo prestamo;
 
-    private PrestamoService prestamoService;
-    BigDecimal cantidad;
+    private Binder<Prestamo> prestamoBinder = new BeanValidationBinder<Prestamo>(Prestamo.class);
+
+
+
+    Double cantidad;
+    Double mes;
     Integer tiempo ;
     String periodo;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -28,23 +38,42 @@ public class CuotaSimulPreview extends Dialog {
 
     public static enum DIALOG_RESULT {SAVE, CANCEL}
 
-    ;
+
 
     private DIALOG_RESULT dialogResult;
 
-//    private Prestamo prestamo;
 
-    public CuotaSimulPreview(Integer t, String p, BigDecimal value) {
+
+    public CuotaSimulPreview(Integer t, String p, Double value, PrestamoService prestamoService) {
         super();
+        this.prestamoService = prestamoService;
         cantidad = value;
         tiempo = t;
         periodo = p;
         System.out.println("entran los valores" + cantidad + tiempo + periodo);
-
+        cantidadMensual(cantidad,tiempo,periodo,this.prestamoService);
 
         // create dialog layout
         add(createTitle(), createCard(cantidad, tiempo, periodo), new Hr(), createToolbarLayout());
 
+    }
+
+    private void cantidadMensual(Double cantidad, Integer tiempo, String periodo, PrestamoService prestamoService) {
+
+       mes = prestamoService.cantidadMensuanl(cantidad,tiempo,periodo);
+
+    }
+
+    public DIALOG_RESULT getDialogResult() {
+        return this.dialogResult;
+    }
+    public void setPrestamo(Prestamo prestamo) {
+        this.prestamo = prestamo;
+        prestamoBinder.readBean(prestamo);
+    }
+
+    public Prestamo getPrestamo() {
+        return prestamo;
     }
     private Component createToolbarLayout() {
 
@@ -78,39 +107,73 @@ public class CuotaSimulPreview extends Dialog {
         return new H3("Resultado Prestamo Simulacion");
     }
 
-    private HorizontalLayout createCard(BigDecimal b, Integer t, String p) {
+    private VerticalLayout createCard(Double b, Integer t, String p) {
 
-        HorizontalLayout card = new HorizontalLayout();
-        card.addClassName("card");
-        card.setSpacing(false);
-        card.getThemeList().add("spacing-s");
 
+        // layout principal que contendrá los layouts posteriores
+        VerticalLayout card = new VerticalLayout();
+        card.setSizeFull();
+
+        // layout con el logo de ingenia bank
+        HorizontalLayout imagenLayout = new HorizontalLayout();
+        Image ingeniaImage = new Image("images/bbvacirc.png", " bbvacirc");
+
+        imagenLayout.add(ingeniaImage);
+
+        // layout con el saldo de la cuenta
+        HorizontalLayout cantidadMes = new HorizontalLayout();
+
+        Span cantidadSpan = new Span();
+        cantidadSpan.add(mes + " €/mes");
+        cantidadSpan.getElement().getStyle().set("font-weight", "bold");
+        cantidadMes.add(cantidadSpan);
+
+        // layout con el datos de la cuenta
+        HorizontalLayout prestamo = new HorizontalLayout();
+
+        Span prestamoSpan = new Span();
+        prestamoSpan.add("Cantidad del prestamo " + b + " €");
+        prestamoSpan.getElement().getStyle().set("font-weight", "bold");
+        prestamo.add(prestamoSpan);
+
+        // layout con el datos de la cuenta
+        HorizontalLayout interes = new HorizontalLayout();
+
+        Span interesSpan = new Span();
+        interesSpan.add("5% de Interés fijo.");
+        prestamoSpan.getElement().getStyle().set("font-weight", "bold");
+        interes.add(interesSpan);
+
+        // layout con el datos de la cuenta
+        HorizontalLayout plazo = new HorizontalLayout();
+
+        Span plazoSpan = new Span();
+        if(p =="A")
+            p ="Años";
+        if(p=="M")
+            p= "Meses";
+        plazoSpan.add("El plazo elegido " +t +" "+p);
+        plazoSpan.getElement().getStyle().set("font-weight", "bold");
+        plazo.add(plazoSpan);
+
+
+        card.add(imagenLayout);
+        card.add(prestamo);
+        card.add(interes);
+        card.add(plazo);
+        card.add(cantidadMes);
 
         return card;
 
     }
 
-    private void recuperarPrestamo(long l) {
 
-        Double cantidad;
-        Double interes;
-        System.out.println("prestamo");
-//        Optional<Prestamo> prestamodb = this.prestamoService.findById(1L);
-//        if(prestamodb.isPresent()){
-//            cantidad=prestamodb.get().getCantidad();
-//            interes = prestamodb.get().getTipoInteres().getInteres();
-//            System.out.println("cantidad"+cantidad);
-//            System.out.println(interes);
-//
-//        }
-//
-//
 
 
 }
 
 
 
-        }
+
 
 

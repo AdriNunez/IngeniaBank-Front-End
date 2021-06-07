@@ -1,13 +1,13 @@
 package com.example.application.backend.service.Impl;
 
 import com.example.application.backend.dao.PrestamoDAO;
-import com.example.application.backend.dao.impl.PrestamoDAOImpl;
 import com.example.application.backend.model.Prestamo;
 import com.example.application.backend.repository.PrestamoRepository;
 import com.example.application.backend.service.PrestamoService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,5 +58,10 @@ public class PrestamoServiceImpl implements PrestamoService {
     public Optional<Prestamo> findById(Long id) {
 
         return prestamoRepository.findById(id);
+    }
+
+    @Override
+    public Double cantidadMensuanl(Double cantidad, Integer duracion, String tiempo) {
+        return prestamoDAO.cantidadMensual(cantidad,tiempo,duracion);
     }
 }

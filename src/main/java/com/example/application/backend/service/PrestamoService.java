@@ -1,8 +1,8 @@
 package com.example.application.backend.service;
 
 import com.example.application.backend.model.Prestamo;
-import org.springframework.security.core.parameters.P;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,5 +19,6 @@ public interface PrestamoService {
     List<Prestamo> findPrestamosByCuenta(Long numeroCuenta);
 
     Optional<Prestamo> findById(Long id);
+    Double cantidadMensuanl(Double cantidad, Integer duracion, String tiempo);
    
 }

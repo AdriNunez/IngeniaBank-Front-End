@@ -1,7 +1,9 @@
 package com.example.application.views.prestamos;
 
 import com.example.application.backend.model.Cuenta;
+import com.example.application.backend.model.Prestamo;
 import com.example.application.backend.service.CuentaService;
+import com.example.application.backend.service.PrestamoService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -18,9 +20,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.select.Select;
-import com.vaadin.flow.component.textfield.BigDecimalField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -34,13 +38,22 @@ import java.util.List;
 public class PrestamosView  extends VerticalLayout {
 
     CuentaService cuentaService;
+    PrestamoService prestamoService;
+    Prestamo prestamo;
+
+//    private Binder<Prestamo> prestamoBinder = new BeanValidationBinder<Prestamo>(Prestamo.class);
 
 
-    public PrestamosView(CuentaService cuentaService) {
+
+    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService) {
         this.setSizeFull();
         this.setPadding(true);
 
         this.cuentaService = cuentaService;
+        this.prestamoService = prestamoService;
+
+//        prestamoBinder.bindInstanceFields(this);
+
        // TEXTO Y HR
         add(new H1("Préstamos IngeniaBank"));
         add(new Hr());
@@ -101,7 +114,15 @@ public class PrestamosView  extends VerticalLayout {
         add(progressBar);
 
     }
+    //para bindear//
+    public void setPrestamo(Prestamo prestamo) {
+        this.prestamo = prestamo;
+        //prestamoBinder.readBean(prestamo);
+    }
 
+    public Prestamo getPrestamo() {
+        return prestamo;
+    }
     private Component createPreview() {
         HorizontalLayout row = new HorizontalLayout();
         //combo duracion
@@ -136,7 +157,7 @@ public class PrestamosView  extends VerticalLayout {
             }
         });
         duracion.setPlaceholder("periodo");
-        BigDecimalField bigDecimalField = new BigDecimalField("Total cost");
+        NumberField bigDecimalField = new NumberField("Total cost");
         bigDecimalField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         bigDecimalField.setSuffixComponent(new Icon(VaadinIcon.EURO));
 
@@ -147,7 +168,7 @@ public class PrestamosView  extends VerticalLayout {
             if (e.getValue() == null) {
                 Notification.show("Obligatorio valor");
             } else {
-                BigDecimal cantidadc = e.getValue();
+                Double cantidadc = e.getValue();
                 System.out.println("kkkkk"+ cantidadc);
             }
 
@@ -156,7 +177,7 @@ public class PrestamosView  extends VerticalLayout {
         //trabajo con los datos recogidos
         Button preview = new Button("preview", clickEvent -> {
             // define form dialog
-            CuotaSimulPreview simulPrestaView = new CuotaSimulPreview(duracion.getValue(),periodoCbx.getValue(),bigDecimalField.getValue());
+            CuotaSimulPreview simulPrestaView = new CuotaSimulPreview(duracion.getValue(),periodoCbx.getValue(),bigDecimalField.getValue(),this.prestamoService);
             simulPrestaView.setWidth("700px");
             simulPrestaView.setCloseOnEsc(true);
             simulPrestaView.setCloseOnOutsideClick(false);
