@@ -52,8 +52,8 @@ public class PrestamoDAOImpl implements PrestamoDAO {
 //        Double i1 = 0D; //tanto por uno
 //        i1 = 5d/100 ;
 //        Double inte = i1;
-        Double E =  0d;
-        Double Ei = 0d;
+        Double E ;
+        Double Ei ;
         int indice;
         this.cantidad = cantidad;
         this.tiempo = tiempo;
@@ -63,7 +63,7 @@ public class PrestamoDAOImpl implements PrestamoDAO {
             {
                //paso el año a 12 meses
                     tiempoM  = this.duracion* 12;
-                    E = this.cantidad/tiempoM;
+                    E =this.cantidad/tiempoM;
                     //cuantía en base al interes (es fijado)
                     Ei= (this.cantidad * 0.05)/12 ;
                     cantidadMensual= E + Ei;
@@ -80,7 +80,7 @@ public class PrestamoDAOImpl implements PrestamoDAO {
             } break;
         }
 
-        return cantidadMensual;
+        return Double.valueOf(Math.round(cantidadMensual));
     }
 
 }
