@@ -33,6 +33,7 @@ public class CuotaSimulPreview extends Dialog {
     Double mes;
     Integer tiempo ;
     String periodo;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
@@ -104,7 +105,7 @@ public class CuotaSimulPreview extends Dialog {
 
 
     private Component createTitle() {
-        return new H3("Resultado Prestamo Simulacion");
+        return new H1("Resultado Prestamo Simulacion");
     }
 
     private VerticalLayout createCard(Double b, Integer t, String p) {
@@ -112,20 +113,26 @@ public class CuotaSimulPreview extends Dialog {
 
         // layout principal que contendrá los layouts posteriores
         VerticalLayout card = new VerticalLayout();
-        card.setSizeFull();
-
+        card.setWidth("100 px");
         // layout con el logo de ingenia bank
         HorizontalLayout imagenLayout = new HorizontalLayout();
         Image ingeniaImage = new Image("images/bbvacirc.png", " bbvacirc");
 
         imagenLayout.add(ingeniaImage);
+        imagenLayout.getElement().getStyle().set("display", "block");
+        imagenLayout.getElement().getStyle().set("margin-left", "auto");
+        imagenLayout.getElement().getStyle().set("margin-right", "auto");
+        imagenLayout.getElement().getStyle().set("width", "50%");
+        imagenLayout.getElement().getStyle().set("opacity", "50%");
 
         // layout con el saldo de la cuenta
         HorizontalLayout cantidadMes = new HorizontalLayout();
+        cantidadMes.getElement().getStyle().set("text-align","center");
 
         Span cantidadSpan = new Span();
         cantidadSpan.add(mes + " €/mes");
         cantidadSpan.getElement().getStyle().set("font-weight", "bold");
+
         cantidadMes.add(cantidadSpan);
 
         // layout con el datos de la cuenta
@@ -157,11 +164,12 @@ public class CuotaSimulPreview extends Dialog {
         plazo.add(plazoSpan);
 
 
-        card.add(imagenLayout);
+
         card.add(prestamo);
         card.add(interes);
         card.add(plazo);
         card.add(cantidadMes);
+        card.add(imagenLayout);
 
         return card;
 

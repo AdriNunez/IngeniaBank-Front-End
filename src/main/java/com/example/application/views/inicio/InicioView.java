@@ -51,8 +51,9 @@ public class InicioView extends VerticalLayout {
 
     private MovimientoService movimientoService;
 
-  /*  RippleClickableCard rcard = new RippleClickableCard(
-            onClick -> {*//* Handle Card click *//*},
+/*
+    RippleClickableCard rcard = new RippleClickableCard(
+            onClick -> { Handle Card click },
             new TitleLabel("Example Title") // Follow up with more Components ...
     );
 
@@ -60,7 +61,8 @@ public class InicioView extends VerticalLayout {
             onClick -> {
                 UI.getCurrent().navigate("tarjetas");},
             new TitleLabel("Example Title") // Follow up with more Components ...
-    );*/
+    );
+*/
 
 
 

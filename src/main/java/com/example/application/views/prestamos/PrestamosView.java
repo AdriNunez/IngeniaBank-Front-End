@@ -9,10 +9,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -60,58 +57,7 @@ public class PrestamosView  extends VerticalLayout {
         add(new H3("Rellena el formulario a continuación :"));
 
         add(createPreview());
-
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        FormLayout columnLayout = new FormLayout();
-        columnLayout.setResponsiveSteps(
-                new FormLayout.ResponsiveStep("25em", 1),
-                new FormLayout.ResponsiveStep("32em", 2),
-                new FormLayout.ResponsiveStep("40em", 3));
-        TextField cantidad = new TextField();
-        cantidad.setLabel("Cantidad");
-        Select<String> duracion = new Select<>();
-        duracion.setItems("6 Meses", "1 Año", "2 Años");
-        duracion.setPlaceholder("Duración");
-
-
-        // SELECT INGRESO
-        Select<Cuenta> cuentaIngreso = new Select<>();
-        cuentaIngreso.setLabel("Cuenta de Ingreso");
-        List<Cuenta> cuentaList = cuentaService.findAll();
-        cuentaIngreso.setItemLabelGenerator(Cuenta::getTipocuenta);
-        cuentaIngreso.setItems(cuentaList);
-
-        // SELECT COBRO
-        Select<Cuenta> cuentaCobro = new Select<>();
-        cuentaCobro.setLabel("Cuenta de Cobro");
-        cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
-        cuentaCobro.setItems(cuentaList);
-
-
-        Select<String> tipo = new Select<>();
-        tipo.setItems("Tipo fijo : 5%"); //ARREGLAR CUANDO esté getTipo()
-        tipo.setPlaceholder("Tipo");
-
-        TextField website = new TextField();
-        website.setPlaceholder("Tipo de interés");
-
-        columnLayout.add(cantidad, cuentaIngreso,cuentaCobro,duracion, tipo);
-        // You can set the desired column span for the components individually.
-        columnLayout.setColspan(tipo, 2);
-        // Or just set it as you add them.
-
-        horizontalLayout.add(columnLayout);
-        horizontalLayout.setPadding(true);
-        horizontalLayout.setSpacing(true);
-        horizontalLayout.getElement().getStyle().set("text-align","center");
-        horizontalLayout.getElement().getStyle().set("position","centered");
-        horizontalLayout.getElement().getStyle().set("width","100%");
-
-        add(horizontalLayout);
-
-        ProgressBar progressBar = new ProgressBar();
-        progressBar.setValue(0.345);
-        add(progressBar);
+        add(new Hr());
 
     }
     //para bindear//
@@ -124,11 +70,13 @@ public class PrestamosView  extends VerticalLayout {
         return prestamo;
     }
     private Component createPreview() {
+        VerticalLayout ver = new VerticalLayout();
         HorizontalLayout row = new HorizontalLayout();
+        HorizontalLayout row2 = new HorizontalLayout();
         //combo duracion
         ComboBox<Integer> duracion = new ComboBox<>();
         duracion.setLabel("Duracion");
-        duracion.setItems(6,1,2);
+        duracion.setItems(1,2,3,4,5,6,7,8,9,10,11,12);
         Div value = new Div();
         value.setText("Select a value");
         duracion.addValueChangeListener(event -> {
@@ -143,7 +91,7 @@ public class PrestamosView  extends VerticalLayout {
         duracion.setPlaceholder("tiempo");
 
         ComboBox<String> periodoCbx = new ComboBox<>();
-        periodoCbx.setLabel("periodo");
+        periodoCbx.setLabel("Meses o Años");
         periodoCbx.setItems("M","A");
         Div vauluep = new Div();
         value.setText("Select a value");
@@ -156,8 +104,11 @@ public class PrestamosView  extends VerticalLayout {
 
             }
         });
-        duracion.setPlaceholder("periodo");
-        NumberField bigDecimalField = new NumberField("Total cost");
+
+
+
+        duracion.setPlaceholder("Número de meses o años");
+        NumberField bigDecimalField = new NumberField("Importe del préstamo");
         bigDecimalField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         bigDecimalField.setSuffixComponent(new Icon(VaadinIcon.EURO));
 
@@ -175,7 +126,7 @@ public class PrestamosView  extends VerticalLayout {
         });
 
         //trabajo con los datos recogidos
-        Button preview = new Button("preview", clickEvent -> {
+        Button preview = new Button("Pide tu préstamo", clickEvent -> {
             // define form dialog
             CuotaSimulPreview simulPrestaView = new CuotaSimulPreview(duracion.getValue(),periodoCbx.getValue(),bigDecimalField.getValue(),this.prestamoService);
             simulPrestaView.setWidth("700px");
@@ -190,10 +141,49 @@ public class PrestamosView  extends VerticalLayout {
             simulPrestaView.open();
         });
 
+        ComboBox<Cuenta> cuentaIngreso = new ComboBox<>();
+        cuentaIngreso.setLabel("Cuenta de Ingreso");
+        List<Cuenta> cuentaList = cuentaService.findAll();
+        cuentaIngreso.setItems(cuentaList);
+        cuentaIngreso.setItemLabelGenerator(Cuenta::getTipocuenta);
+        Div valuep = new Div();
+        value.setText("Select a value");
+        cuentaIngreso.addValueChangeListener(event -> {
+            if (event.getValue() == null) {
+                vauluep.setText("No option selected");
+            } else {
+                vauluep.setText("Selected: " + event.getValue());
 
-        row.add(duracion,periodoCbx,bigDecimalField,preview);
 
-        return row;
+            }
+        });
+
+        ComboBox<Cuenta> cuentaCobro = new ComboBox<>();
+        cuentaCobro.setLabel("Cuenta de Cobro");
+        cuentaCobro.setItems(cuentaList);
+        cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
+        value.setText("Select a value");
+        cuentaCobro.addValueChangeListener(event -> {
+            if (event.getValue() == null) {
+                vauluep.setText("No option selected");
+            } else {
+                vauluep.setText("Selected: " + event.getValue());
+
+
+            }
+        });
+
+        Image ingeniaImage = new Image("images/logoB.png", " logo");
+        ingeniaImage.getElement().getStyle().set("display", "block");
+        ingeniaImage.getElement().getStyle().set("margin-left", "auto");
+        ingeniaImage.getElement().getStyle().set("margin-right", "auto");
+        ingeniaImage.getElement().getStyle().set("width", "5%");
+        Hr hr = new Hr();
+
+        row.add(duracion,periodoCbx,bigDecimalField,cuentaIngreso,cuentaCobro);
+        row2.add();
+        ver.add(row,row2,preview,hr,ingeniaImage);
+        return ver;
     }
 
 
