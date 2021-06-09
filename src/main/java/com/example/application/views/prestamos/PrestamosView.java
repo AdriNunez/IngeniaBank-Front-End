@@ -9,6 +9,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -103,7 +104,9 @@ public class PrestamosView  extends VerticalLayout {
 
         duracion = new ComboBox<>();
         duracion.setLabel("Duracion");
+
         duracion.setItems(1,2,3,4,5,6,7,8,9,10,11,12);
+        duracion.setValue(1);
         duracion.setAutofocus(true);
 
         Div value = new Div();
@@ -129,6 +132,7 @@ public class PrestamosView  extends VerticalLayout {
         periodoCbx = new ComboBox<>();
         periodoCbx.setLabel("Meses o Años");
         periodoCbx.setItems("M","A");
+        periodoCbx.setValue("M");
         Div vauluep = new Div();
         value.setText("Select a value");
         periodoCbx.addValueChangeListener(event -> {
@@ -168,7 +172,7 @@ public class PrestamosView  extends VerticalLayout {
         cuentaIngreso.setItemLabelGenerator(Cuenta::getTipocuenta);
         Div valuep = new Div();
         value.setText("Select a value");
-        cuentaIngreso.addValueChangeListener(event -> {
+        cuentaIngreso. addValueChangeListener(event -> {
             if (event.getValue() == null) {
                 vauluep.setText("No option selected");
             } else {
@@ -180,6 +184,7 @@ public class PrestamosView  extends VerticalLayout {
         });
 
         cuentaCobro = new ComboBox<>();
+
         cuentaCobro.setLabel("Cuenta de Cobro");
         cuentaCobro.setItems(cuentaList);
         cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
@@ -266,6 +271,13 @@ public class PrestamosView  extends VerticalLayout {
             setEnabled(true);
         }
         getElement().setProperty(PROP_ERROR, error);
+    }
+
+    public Grid createGrid(){
+        Grid<Prestamo> grid = new Grid<>(Prestamo.class);
+        grid.setColumns("cantidad","duracion");
+        grid.setMaxWidth("500 px");
+        return grid;
     }
 
 

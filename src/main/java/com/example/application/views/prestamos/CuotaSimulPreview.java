@@ -168,12 +168,27 @@ public class CuotaSimulPreview extends Dialog {
         plazo.add(plazoSpan);
 
 
+        HorizontalLayout cuentaC = new HorizontalLayout();
+
+        Span cuentaCobro = new Span();
+        cuentaCobro.add("Número de Cuenta de cobro " + this.numerocuentaCobro);
+        cuentaCobro.getElement().getStyle().set("font-weight", "bold");
+        cuentaC.add(cuentaCobro);
+
+        HorizontalLayout cuentaI =new HorizontalLayout();
+
+        Span cuentaIngreso = new Span();
+        cuentaIngreso.add("Número de Cuenta de Ingreso " + this.numerocuentaIngreso);
+        cuentaIngreso.getElement().getStyle().set("font-weight", "bold");
+        cuentaC.add(cuentaIngreso);
 
         card.add(prestamo);
         card.add(interes);
         card.add(plazo);
         card.add(cantidadMes);
         card.add(imagenLayout);
+        card.add(cuentaC);
+        card.add(cuentaI);
 
         return card;
 
