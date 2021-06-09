@@ -25,7 +25,7 @@ public class CuotaSimulPreview extends Dialog {
     PrestamoService prestamoService;
     Prestamo prestamo;
 
-    private Binder<Prestamo> prestamoBinder = new BeanValidationBinder<Prestamo>(Prestamo.class);
+    private Binder<Prestamo> prestamoBinder = new Binder<>(Prestamo.class);
 
 
 
@@ -33,6 +33,8 @@ public class CuotaSimulPreview extends Dialog {
     Double mes;
     Integer tiempo ;
     String periodo;
+    Long numerocuentaCobro;
+    Long numerocuentaIngreso;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -45,13 +47,15 @@ public class CuotaSimulPreview extends Dialog {
 
 
 
-    public CuotaSimulPreview(Integer t, String p, Double value, PrestamoService prestamoService) {
+    public CuotaSimulPreview(Long numerocuentaCobro, Long numercuentaIngreso, Integer t, String p, Double value, PrestamoService prestamoService) {
         super();
         this.prestamoService = prestamoService;
         cantidad = value;
         tiempo = t;
         periodo = p;
-        System.out.println("entran los valores" + cantidad + tiempo + periodo);
+        this.numerocuentaCobro = numerocuentaCobro;
+        this.numerocuentaIngreso = numercuentaIngreso;
+        System.out.println("entran los valores" + cantidad + tiempo + periodo +" hola numero de cuenta"+ this.numerocuentaCobro + " hola numero cuenta ingreso" + this.numerocuentaIngreso );
         cantidadMensual(cantidad,tiempo,periodo,this.prestamoService);
 
         // create dialog layout

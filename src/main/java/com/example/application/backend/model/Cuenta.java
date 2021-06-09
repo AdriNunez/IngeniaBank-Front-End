@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 public class Cuenta extends AbstractEntity {
 
     @Column(length=10)
+    @NotEmpty
     private Long numerocuenta;
     //datos cuenta IBAN
     @Column(length=2)

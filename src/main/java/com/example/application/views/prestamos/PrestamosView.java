@@ -37,8 +37,18 @@ public class PrestamosView  extends VerticalLayout {
     CuentaService cuentaService;
     PrestamoService prestamoService;
     Prestamo prestamo;
-
-//    private Binder<Prestamo> prestamoBinder = new BeanValidationBinder<Prestamo>(Prestamo.class);
+    List<Cuenta> cuentas;
+    Cuenta cuenta;
+    Long numerocuentaCobro;
+    Long numercuentaIngreso;
+    private FormLayout formLayout;
+    private ComboBox<Integer> duracion;
+    ComboBox<String> periodoCbx;
+    NumberField cantidadField;
+    ComboBox<Cuenta> cuentaIngreso;
+    ComboBox<Cuenta> cuentaCobro;
+    private static final String PROP_ERROR = "error";
+    private Binder<Prestamo> prestamoBinder = new Binder<>(Prestamo.class);
 
 
 
@@ -49,6 +59,7 @@ public class PrestamosView  extends VerticalLayout {
         this.cuentaService = cuentaService;
         this.prestamoService = prestamoService;
 
+        loadData();
 //        prestamoBinder.bindInstanceFields(this);
 
        // TEXTO Y HR
@@ -60,6 +71,13 @@ public class PrestamosView  extends VerticalLayout {
         add(new Hr());
 
     }
+
+
+    private void loadData() {
+        cuentas = cuentaService.findAll();
+
+    }
+
     //para bindear//
     public void setPrestamo(Prestamo prestamo) {
         this.prestamo = prestamo;
@@ -70,27 +88,45 @@ public class PrestamosView  extends VerticalLayout {
         return prestamo;
     }
     private Component createPreview() {
+        formLayout = new FormLayout();
+        formLayout.setWidthFull();
+
+        formLayout.setResponsiveSteps(
+                new FormLayout.ResponsiveStep("1px", 1),
+                new FormLayout.ResponsiveStep("600px", 2),
+                new FormLayout.ResponsiveStep("700px", 3));
+
         VerticalLayout ver = new VerticalLayout();
         HorizontalLayout row = new HorizontalLayout();
         HorizontalLayout row2 = new HorizontalLayout();
         //combo duracion
-        ComboBox<Integer> duracion = new ComboBox<>();
+
+        duracion = new ComboBox<>();
         duracion.setLabel("Duracion");
         duracion.setItems(1,2,3,4,5,6,7,8,9,10,11,12);
+        duracion.setAutofocus(true);
+
         Div value = new Div();
         value.setText("Select a value");
         duracion.addValueChangeListener(event -> {
             if (event.getValue() == null) {
-                value.setText("No option selected");
+                System.out.println("estoy aui?");
+
+
             } else {
+                System.out.println("tengo cosilllas que no muestro?");
                 value.setText("Selected: " + event.getValue());
 
 
             }
         });
-        duracion.setPlaceholder("tiempo");
-
-        ComboBox<String> periodoCbx = new ComboBox<>();
+        //esta es la opción del requerimiento.
+        prestamoBinder.forField(duracion)
+                .asRequired("Seleccione")
+                .bind("duracion");
+        
+        //periodo
+        periodoCbx = new ComboBox<>();
         periodoCbx.setLabel("Meses o Años");
         periodoCbx.setItems("M","A");
         Div vauluep = new Div();
@@ -105,43 +141,27 @@ public class PrestamosView  extends VerticalLayout {
             }
         });
 
-
-
         duracion.setPlaceholder("Número de meses o años");
-        NumberField bigDecimalField = new NumberField("Importe del préstamo");
-        bigDecimalField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-        bigDecimalField.setSuffixComponent(new Icon(VaadinIcon.EURO));
-
-
-
-        bigDecimalField.addValueChangeListener(e -> {
-
+        
+        //cantidad
+        cantidadField = new NumberField("Importe del préstamo");
+        cantidadField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+        cantidadField.setSuffixComponent(new Icon(VaadinIcon.EURO));
+        prestamoBinder.forField(cantidadField)
+                .asRequired("Obligatorio")
+                .bind("cantidad");
+        cantidadField.addValueChangeListener(e -> {
+            System.out.println("hola cantidad");
             if (e.getValue() == null) {
                 Notification.show("Obligatorio valor");
             } else {
                 Double cantidadc = e.getValue();
-                System.out.println("kkkkk"+ cantidadc);
+
             }
 
         });
 
-        //trabajo con los datos recogidos
-        Button preview = new Button("Pide tu préstamo", clickEvent -> {
-            // define form dialog
-            CuotaSimulPreview simulPrestaView = new CuotaSimulPreview(duracion.getValue(),periodoCbx.getValue(),bigDecimalField.getValue(),this.prestamoService);
-            simulPrestaView.setWidth("700px");
-            simulPrestaView.setCloseOnEsc(true);
-            simulPrestaView.setCloseOnOutsideClick(false);
-            // bind form dialog with product entity
-
-
-            // define form dialog view callback
-
-            // open form dialog view
-            simulPrestaView.open();
-        });
-
-        ComboBox<Cuenta> cuentaIngreso = new ComboBox<>();
+        cuentaIngreso = new ComboBox<>();
         cuentaIngreso.setLabel("Cuenta de Ingreso");
         List<Cuenta> cuentaList = cuentaService.findAll();
         cuentaIngreso.setItems(cuentaList);
@@ -156,12 +176,14 @@ public class PrestamosView  extends VerticalLayout {
 
 
             }
+            numercuentaIngreso = event.getValue().getNumerocuenta();
         });
 
-        ComboBox<Cuenta> cuentaCobro = new ComboBox<>();
+        cuentaCobro = new ComboBox<>();
         cuentaCobro.setLabel("Cuenta de Cobro");
         cuentaCobro.setItems(cuentaList);
         cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
+
         value.setText("Select a value");
         cuentaCobro.addValueChangeListener(event -> {
             if (event.getValue() == null) {
@@ -169,9 +191,62 @@ public class PrestamosView  extends VerticalLayout {
             } else {
                 vauluep.setText("Selected: " + event.getValue());
 
+                System.out.println(event.getValue().getNumerocuenta());
+
+
 
             }
+            numerocuentaCobro = event.getValue().getNumerocuenta();
+            System.out.println("333"+event.getValue().getNumerocuenta());
         });
+        //trabajo con los datos recogidos
+        Button preview = new Button("Pide tu préstamo", clickEvent -> {
+            // define form dialog
+            CuotaSimulPreview simulPrestaView = new CuotaSimulPreview(numerocuentaCobro,numercuentaIngreso,duracion.getValue(),periodoCbx.getValue(),cantidadField.getValue(),this.prestamoService);
+            simulPrestaView.setWidth("700px");
+            simulPrestaView.setCloseOnEsc(true);
+            simulPrestaView.setCloseOnOutsideClick(false);
+            // bind form dialog with product entity
+
+
+            // define form dialog view callback
+
+            // open form dialog view
+            simulPrestaView.open();
+        });
+
+
+//        ComboBox<Cuenta> cuentaIngreso = new ComboBox<>();
+//        cuentaIngreso.setLabel("Cuenta de Ingreso");
+//        List<Cuenta> cuentaList = cuentaService.findAll();
+//        cuentaIngreso.setItems(cuentaList);
+//        cuentaIngreso.setItemLabelGenerator(Cuenta::getTipocuenta);
+//        Div valuep = new Div();
+//        value.setText("Select a value");
+//        cuentaIngreso.addValueChangeListener(event -> {
+//            if (event.getValue() == null) {
+//                vauluep.setText("No option selected");
+//            } else {
+//                vauluep.setText("Selected: " + event.getValue());
+//
+//
+//            }
+//        });
+//
+//        ComboBox<Cuenta> cuentaCobro = new ComboBox<>();
+//        cuentaCobro.setLabel("Cuenta de Cobro");
+//        cuentaCobro.setItems(cuentaList);
+//        cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
+//        value.setText("Select a value");
+//        cuentaCobro.addValueChangeListener(event -> {
+//            if (event.getValue() == null) {
+//                vauluep.setText("No option selected");
+//            } else {
+//                vauluep.setText("Selected: " + event.getValue());
+//
+//
+//            }
+//        });
 
         Image ingeniaImage = new Image("images/logoB.png", " logo");
         ingeniaImage.getElement().getStyle().set("display", "block");
@@ -180,10 +255,17 @@ public class PrestamosView  extends VerticalLayout {
         ingeniaImage.getElement().getStyle().set("width", "5%");
         Hr hr = new Hr();
 
-        row.add(duracion,periodoCbx,bigDecimalField,cuentaIngreso,cuentaCobro);
+        row.add(duracion,periodoCbx,cantidadField,cuentaIngreso,cuentaCobro);
         row2.add();
         ver.add(row,row2,preview,hr,ingeniaImage);
         return ver;
+    }
+
+    public void setError(boolean error) {
+        if (error) {
+            setEnabled(true);
+        }
+        getElement().setProperty(PROP_ERROR, error);
     }
 
 

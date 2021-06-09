@@ -3,6 +3,7 @@ package com.example.application.backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class Prestamo extends  AbstractEntity{
 
 
     @Column(name="duracion" , nullable = false)
+    @NotNull
+    @NotEmpty
     private Duracion duracion;
 
 
