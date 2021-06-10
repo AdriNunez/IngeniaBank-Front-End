@@ -1,4 +1,5 @@
 INSERT INTO categoria (id, nombre) VALUES (4, 'NOMINAS');
+INSERT INTO categoria (id, nombre) VALUES (5, 'PRESTAMOS');
 
 
 insert into cuenta (id,numerocuenta,codpais,digitocontrol,entidad,oficina,tipocuenta,estado, fechaactual, fechaapertura,fechacontable, saldo_actual,saldo_inicial)

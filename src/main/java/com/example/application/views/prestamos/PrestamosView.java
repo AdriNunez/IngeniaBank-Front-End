@@ -2,7 +2,9 @@ package com.example.application.views.prestamos;
 
 import com.example.application.backend.model.Cuenta;
 import com.example.application.backend.model.Prestamo;
+import com.example.application.backend.service.CategoriaService;
 import com.example.application.backend.service.CuentaService;
+import com.example.application.backend.service.MovimientoService;
 import com.example.application.backend.service.PrestamoService;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
@@ -16,16 +18,17 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.progressbar.ProgressBar;
-import com.vaadin.flow.component.select.Select;
+
 import com.vaadin.flow.component.textfield.NumberField;
-import com.vaadin.flow.component.textfield.TextField;
+
 import com.vaadin.flow.component.textfield.TextFieldVariant;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
+
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
@@ -37,11 +40,16 @@ public class PrestamosView  extends VerticalLayout {
 
     CuentaService cuentaService;
     PrestamoService prestamoService;
+    CategoriaService categoriaService;
+    private MovimientoService movimientoService;
     Prestamo prestamo;
     List<Cuenta> cuentas;
     Cuenta cuenta;
     Long numerocuentaCobro;
     Long numercuentaIngreso;
+    Long cuentaIdCobro;
+    Long cuentaIdIngreso;
+
     private FormLayout formLayout;
     private ComboBox<Integer> duracion;
     ComboBox<String> periodoCbx;
@@ -49,16 +57,18 @@ public class PrestamosView  extends VerticalLayout {
     ComboBox<Cuenta> cuentaIngreso;
     ComboBox<Cuenta> cuentaCobro;
     private static final String PROP_ERROR = "error";
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     private Binder<Prestamo> prestamoBinder = new Binder<>(Prestamo.class);
 
 
 
-    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService) {
+    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService,MovimientoService movimientoService,CategoriaService categoriaService) {
         this.setSizeFull();
         this.setPadding(true);
 
         this.cuentaService = cuentaService;
         this.prestamoService = prestamoService;
+        this.movimientoService = movimientoService;
 
         loadData();
 //        prestamoBinder.bindInstanceFields(this);
@@ -202,7 +212,7 @@ public class PrestamosView  extends VerticalLayout {
 
             }
             numerocuentaCobro = event.getValue().getNumerocuenta();
-            System.out.println("333"+event.getValue().getNumerocuenta());
+            cuentaIdCobro = event.getValue().getId();
         });
         //trabajo con los datos recogidos
         Button preview = new Button("Pide tu préstamo", clickEvent -> {
@@ -211,47 +221,33 @@ public class PrestamosView  extends VerticalLayout {
             simulPrestaView.setWidth("700px");
             simulPrestaView.setCloseOnEsc(true);
             simulPrestaView.setCloseOnOutsideClick(false);
-            // bind form dialog with product entity
-
-
+            // open form dialog view
             // define form dialog view callback
+            String periodo = simulPrestaView.periodo;
+            Integer tiempo = simulPrestaView.tiempo;
+            simulPrestaView.addOpenedChangeListener(event -> {
+                if(!event.isOpened()) {
+                    if (simulPrestaView.getDialogResult() == CuotaSimulPreview.DIALOG_RESULT.SAVE)
+                        try {
+
+
+
+                            AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService,categoriaService);
+
+                            Notification.show("Préstamo solicitado con éxito", 5000, Notification.Position.MIDDLE);
+
+                        } catch (Exception ex) {
+                            logger.error(ex.getMessage());
+
+                            Notification.show("Error interno, no se ha podido formalizar el préstamo",5000,Notification.Position.MIDDLE);
+
+                        }
+                }
+            });
 
             // open form dialog view
             simulPrestaView.open();
         });
-
-
-//        ComboBox<Cuenta> cuentaIngreso = new ComboBox<>();
-//        cuentaIngreso.setLabel("Cuenta de Ingreso");
-//        List<Cuenta> cuentaList = cuentaService.findAll();
-//        cuentaIngreso.setItems(cuentaList);
-//        cuentaIngreso.setItemLabelGenerator(Cuenta::getTipocuenta);
-//        Div valuep = new Div();
-//        value.setText("Select a value");
-//        cuentaIngreso.addValueChangeListener(event -> {
-//            if (event.getValue() == null) {
-//                vauluep.setText("No option selected");
-//            } else {
-//                vauluep.setText("Selected: " + event.getValue());
-//
-//
-//            }
-//        });
-//
-//        ComboBox<Cuenta> cuentaCobro = new ComboBox<>();
-//        cuentaCobro.setLabel("Cuenta de Cobro");
-//        cuentaCobro.setItems(cuentaList);
-//        cuentaCobro.setItemLabelGenerator(Cuenta::getTipocuenta);
-//        value.setText("Select a value");
-//        cuentaCobro.addValueChangeListener(event -> {
-//            if (event.getValue() == null) {
-//                vauluep.setText("No option selected");
-//            } else {
-//                vauluep.setText("Selected: " + event.getValue());
-//
-//
-//            }
-//        });
 
         Image ingeniaImage = new Image("images/logoB.png", " logo");
         ingeniaImage.getElement().getStyle().set("display", "block");
