@@ -1,5 +1,6 @@
 package com.example.application.backend.service.Impl;
 import com.example.application.backend.dao.TarjetaDAO;
+
 import com.example.application.backend.model.Tarjeta;
 import com.example.application.backend.repository.TarjetaRepository;
 import com.example.application.backend.service.TarjetaService;
@@ -46,5 +47,10 @@ public class TarjetaServiceImpl implements TarjetaService {
     @Override
     public Double getSaldoTotalCuenta(Long id) {
         return this.tarjetaRepository.getSaldoTotalCuenta(id);
+    }
+
+    @Override
+    public Tarjeta findById(Long id) {
+        return tarjetaRepository.getOne(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.application.backend.service;
 
+
 import com.example.application.backend.model.Tarjeta;
 import org.springframework.stereotype.Service;
 
@@ -22,4 +23,8 @@ public interface TarjetaService {
     List<Tarjeta> findTarjetasByCuenta(Long numeroCuenta);
 
     Double getSaldoTotalCuenta(Long id);
+
+
+    Tarjeta findById(Long id);
+
 }

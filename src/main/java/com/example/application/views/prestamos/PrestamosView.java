@@ -1,37 +1,28 @@
 package com.example.application.views.prestamos;
 
-import com.example.application.backend.model.Cuenta;
-import com.example.application.backend.model.Prestamo;
-import com.example.application.backend.service.CategoriaService;
-import com.example.application.backend.service.CuentaService;
-import com.example.application.backend.service.MovimientoService;
-import com.example.application.backend.service.PrestamoService;
+import com.example.application.backend.model.*;
+import com.example.application.backend.service.*;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import com.vaadin.flow.component.textfield.NumberField;
-
 import com.vaadin.flow.component.textfield.TextFieldVariant;
-
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Route(value = "Prestamos", layout = MainView.class)
@@ -42,6 +33,7 @@ public class PrestamosView  extends VerticalLayout {
     PrestamoService prestamoService;
     CategoriaService categoriaService;
     private MovimientoService movimientoService;
+    TarjetaService tarjetaService;
     Prestamo prestamo;
     List<Cuenta> cuentas;
     Cuenta cuenta;
@@ -49,6 +41,8 @@ public class PrestamosView  extends VerticalLayout {
     Long numercuentaIngreso;
     Long cuentaIdCobro;
     Long cuentaIdIngreso;
+    private  final String PRESTAMO = "Prestamo";
+    private  final String  CONCEPTO = "Prestamo personal";
 
     private FormLayout formLayout;
     private ComboBox<Integer> duracion;
@@ -62,13 +56,15 @@ public class PrestamosView  extends VerticalLayout {
 
 
 
-    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService,MovimientoService movimientoService,CategoriaService categoriaService) {
+    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService,MovimientoService movimientoService,CategoriaService categoriaService,TarjetaService tarjetaService) {
         this.setSizeFull();
         this.setPadding(true);
 
         this.cuentaService = cuentaService;
         this.prestamoService = prestamoService;
         this.movimientoService = movimientoService;
+        this.categoriaService = categoriaService;
+        this.tarjetaService =  tarjetaService;
 
         loadData();
 //        prestamoBinder.bindInstanceFields(this);
@@ -123,11 +119,8 @@ public class PrestamosView  extends VerticalLayout {
         value.setText("Select a value");
         duracion.addValueChangeListener(event -> {
             if (event.getValue() == null) {
-                System.out.println("estoy aui?");
-
-
             } else {
-                System.out.println("tengo cosilllas que no muestro?");
+
                 value.setText("Selected: " + event.getValue());
 
 
@@ -150,22 +143,21 @@ public class PrestamosView  extends VerticalLayout {
                 vauluep.setText("No option selected");
             } else {
                 vauluep.setText("Selected: " + event.getValue());
-
-
-            }
+           }
         });
 
         duracion.setPlaceholder("Número de meses o años");
         
         //cantidad
         cantidadField = new NumberField("Importe del préstamo");
+        cantidadField.setWidth("40%");
         cantidadField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         cantidadField.setSuffixComponent(new Icon(VaadinIcon.EURO));
         prestamoBinder.forField(cantidadField)
                 .asRequired("Obligatorio")
                 .bind("cantidad");
         cantidadField.addValueChangeListener(e -> {
-            System.out.println("hola cantidad");
+
             if (e.getValue() == null) {
                 Notification.show("Obligatorio valor");
             } else {
@@ -191,6 +183,7 @@ public class PrestamosView  extends VerticalLayout {
 
             }
             numercuentaIngreso = event.getValue().getNumerocuenta();
+            cuentaIdIngreso = event.getValue().getId();
         });
 
         cuentaCobro = new ComboBox<>();
@@ -205,10 +198,6 @@ public class PrestamosView  extends VerticalLayout {
                 vauluep.setText("No option selected");
             } else {
                 vauluep.setText("Selected: " + event.getValue());
-
-                System.out.println(event.getValue().getNumerocuenta());
-
-
 
             }
             numerocuentaCobro = event.getValue().getNumerocuenta();
@@ -229,12 +218,16 @@ public class PrestamosView  extends VerticalLayout {
                 if(!event.isOpened()) {
                     if (simulPrestaView.getDialogResult() == CuotaSimulPreview.DIALOG_RESULT.SAVE)
                         try {
-
-
-
-                            AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService,categoriaService);
+                            //crear movimiento ingreso
+                            Movimiento movimientoi = new Movimiento();
+                            Double cantidad = cantidadField.getValue();
+                            Categoria categoria = categoriaService.findById(5l);
+                            Tarjeta tarjeta = tarjetaService.findById(4441L);
+                            crearMovimiento(cantidad, cuentaIdIngreso,movimientoi,tarjeta,categoria);
+                            AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService, tarjetaService, categoriaService);
 
                             Notification.show("Préstamo solicitado con éxito", 5000, Notification.Position.MIDDLE);
+
 
                         } catch (Exception ex) {
                             logger.error(ex.getMessage());
@@ -262,6 +255,20 @@ public class PrestamosView  extends VerticalLayout {
         return ver;
     }
 
+    private void crearMovimiento(Double cantidad, Long cuentaIdIngreso, Movimiento movimientoi, Tarjeta tarjeta, Categoria categoria) {
+        movimientoi.setCuenta(cuentaService.findById(cuentaIdIngreso));
+        movimientoi.setImporte(cantidad);
+        movimientoi.setConcepto(CONCEPTO);
+        movimientoi.setFecha(LocalDateTime.now());
+        movimientoi.setFechaValor(LocalDate.now());
+        movimientoi.setDescripcion(PRESTAMO);
+        movimientoi.setTarjeta(tarjeta);
+        movimientoi.setCategoria(categoria);
+        movimientoi.setCuenta(cuentaService.findById(cuentaIdIngreso));
+        movimientoService.createMovimiento(movimientoi);
+
+    }
+
     public void setError(boolean error) {
         if (error) {
             setEnabled(true);
@@ -269,12 +276,6 @@ public class PrestamosView  extends VerticalLayout {
         getElement().setProperty(PROP_ERROR, error);
     }
 
-    public Grid createGrid(){
-        Grid<Prestamo> grid = new Grid<>(Prestamo.class);
-        grid.setColumns("cantidad","duracion");
-        grid.setMaxWidth("500 px");
-        return grid;
-    }
 
 
 }

@@ -31,7 +31,6 @@ public class UsuarioDaoImpl implements UsuarioDao {
             criteria.select(root);
             criteria.where(builder.equal(root.get("nif"), nif));
             Usuario item = manager.createQuery(criteria).getSingleResult();
-            System.out.println(item.getNif());
             manager.close();
             return Optional.of(item);
 
