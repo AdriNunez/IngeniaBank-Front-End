@@ -1,7 +1,6 @@
 package com.example.application.views.prestamos;
 
-import com.example.application.backend.model.Cuenta;
-import com.example.application.backend.model.Prestamo;
+import com.example.application.backend.model.*;
 import com.example.application.backend.service.*;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
@@ -22,6 +21,8 @@ import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Route(value = "Prestamos", layout = MainView.class)
@@ -40,6 +41,8 @@ public class PrestamosView  extends VerticalLayout {
     Long numercuentaIngreso;
     Long cuentaIdCobro;
     Long cuentaIdIngreso;
+    private  final String PRESTAMO = "Prestamo";
+    private  final String  CONCEPTO = "Prestamo personal";
 
     private FormLayout formLayout;
     private ComboBox<Integer> duracion;
@@ -215,10 +218,16 @@ public class PrestamosView  extends VerticalLayout {
                 if(!event.isOpened()) {
                     if (simulPrestaView.getDialogResult() == CuotaSimulPreview.DIALOG_RESULT.SAVE)
                         try {
-
+                            //crear movimiento ingreso
+                            Movimiento movimientoi = new Movimiento();
+                            Double cantidad = cantidadField.getValue();
+                            Categoria categoria = categoriaService.findById(5l);
+                            Tarjeta tarjeta = tarjetaService.findById(4441L);
+                            crearMovimiento(cantidad, cuentaIdIngreso,movimientoi,tarjeta,categoria);
                             AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService, tarjetaService, categoriaService);
 
                             Notification.show("Préstamo solicitado con éxito", 5000, Notification.Position.MIDDLE);
+
 
                         } catch (Exception ex) {
                             logger.error(ex.getMessage());
@@ -244,6 +253,20 @@ public class PrestamosView  extends VerticalLayout {
         row2.add();
         ver.add(row,row2,preview,hr,ingeniaImage);
         return ver;
+    }
+
+    private void crearMovimiento(Double cantidad, Long cuentaIdIngreso, Movimiento movimientoi, Tarjeta tarjeta, Categoria categoria) {
+        movimientoi.setCuenta(cuentaService.findById(cuentaIdIngreso));
+        movimientoi.setImporte(cantidad);
+        movimientoi.setConcepto(CONCEPTO);
+        movimientoi.setFecha(LocalDateTime.now());
+        movimientoi.setFechaValor(LocalDate.now());
+        movimientoi.setDescripcion(PRESTAMO);
+        movimientoi.setTarjeta(tarjeta);
+        movimientoi.setCategoria(categoria);
+        movimientoi.setCuenta(cuentaService.findById(cuentaIdIngreso));
+        movimientoService.createMovimiento(movimientoi);
+
     }
 
     public void setError(boolean error) {

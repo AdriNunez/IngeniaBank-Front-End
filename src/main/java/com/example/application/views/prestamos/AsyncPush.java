@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Push
 @Route("asyncpush")
 public class AsyncPush extends Div {
-    private static final int WAITING_TIME = 5000;
+    private static final int WAITING_TIME = 10000;
     public static Long cuentaIdCobro;
     public static Long cuentaIdIngreso;
     public  static Long cuenta;
@@ -33,6 +33,8 @@ public class AsyncPush extends Div {
     private static final Long idCategoria = 5L;
     private static CategoriaService categoriaService;
     private static  TarjetaService tarjetaService;
+
+    private static  Double cantidad ;
 
     private FeederThread thread;
 
@@ -55,6 +57,7 @@ public class AsyncPush extends Div {
         this.categoriaService = categoriaService;
         AsyncPush.tarjetaService = tarjetaService;
         durationAsync = tiempo;
+
         FeederThread thread = new FeederThread();
         thread.start();
 
@@ -105,7 +108,7 @@ public class AsyncPush extends Div {
          * @return Boolean if the operation makes succesfull
          */
         private Boolean createTransaction(int count ) throws IOException {
-            Double cantidad = null;
+
 
             Movimiento movimiento = new Movimiento();
             //recuperar el tipo de categoria.
@@ -125,21 +128,10 @@ public class AsyncPush extends Div {
                     crearMovimiento(cantidad, cuenta,movimientoc,tarjeta,categoria);
 
                 }
-                if(cuentaIdIngreso!=null) {
-                    Movimiento movimientoi = new Movimiento();
-                    cantidad = cantidadMes;
-                    cuenta = cuentaIdIngreso;
-                    crearMovimiento(cantidad, cuenta,movimientoi,tarjeta,categoria);
-
-                }
-
-
-
 
             } catch (Exception e) {
                 logger.error(e.getMessage());
 
-               // movimiento.setId(-500L);
                 return false;
             }
             return true;
