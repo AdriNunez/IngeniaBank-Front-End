@@ -159,6 +159,7 @@ public class PrestamosView  extends VerticalLayout {
         
         //cantidad
         cantidadField = new NumberField("Importe del préstamo");
+        cantidadField.setWidth("40%");
         cantidadField.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
         cantidadField.setSuffixComponent(new Icon(VaadinIcon.EURO));
         prestamoBinder.forField(cantidadField)
@@ -269,12 +270,6 @@ public class PrestamosView  extends VerticalLayout {
         getElement().setProperty(PROP_ERROR, error);
     }
 
-    public Grid createGrid(){
-        Grid<Prestamo> grid = new Grid<>(Prestamo.class);
-        grid.setColumns("cantidad","duracion");
-        grid.setMaxWidth("500 px");
-        return grid;
-    }
 
 
 }
