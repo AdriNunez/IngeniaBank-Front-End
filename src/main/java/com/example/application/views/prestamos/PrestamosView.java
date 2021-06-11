@@ -2,36 +2,26 @@ package com.example.application.views.prestamos;
 
 import com.example.application.backend.model.Cuenta;
 import com.example.application.backend.model.Prestamo;
-import com.example.application.backend.service.CategoriaService;
-import com.example.application.backend.service.CuentaService;
-import com.example.application.backend.service.MovimientoService;
-import com.example.application.backend.service.PrestamoService;
+import com.example.application.backend.service.*;
 import com.example.application.views.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import com.vaadin.flow.component.textfield.NumberField;
-
 import com.vaadin.flow.component.textfield.TextFieldVariant;
-
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import java.math.BigDecimal;
 import java.util.List;
 
 @Route(value = "Prestamos", layout = MainView.class)
@@ -42,6 +32,7 @@ public class PrestamosView  extends VerticalLayout {
     PrestamoService prestamoService;
     CategoriaService categoriaService;
     private MovimientoService movimientoService;
+    TarjetaService tarjetaService;
     Prestamo prestamo;
     List<Cuenta> cuentas;
     Cuenta cuenta;
@@ -62,13 +53,15 @@ public class PrestamosView  extends VerticalLayout {
 
 
 
-    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService,MovimientoService movimientoService,CategoriaService categoriaService) {
+    public PrestamosView(CuentaService cuentaService,PrestamoService prestamoService,MovimientoService movimientoService,CategoriaService categoriaService,TarjetaService tarjetaService) {
         this.setSizeFull();
         this.setPadding(true);
 
         this.cuentaService = cuentaService;
         this.prestamoService = prestamoService;
         this.movimientoService = movimientoService;
+        this.categoriaService = categoriaService;
+        this.tarjetaService =  tarjetaService;
 
         loadData();
 //        prestamoBinder.bindInstanceFields(this);
@@ -231,9 +224,7 @@ public class PrestamosView  extends VerticalLayout {
                     if (simulPrestaView.getDialogResult() == CuotaSimulPreview.DIALOG_RESULT.SAVE)
                         try {
 
-
-
-                            AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService,categoriaService);
+                            AsyncPush asyncPush = new AsyncPush(tiempo,cuentaIdCobro,cuentaIdIngreso, simulPrestaView.mes, cuentaService,movimientoService, tarjetaService, categoriaService);
 
                             Notification.show("Préstamo solicitado con éxito", 5000, Notification.Position.MIDDLE);
 

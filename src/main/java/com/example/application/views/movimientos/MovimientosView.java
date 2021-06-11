@@ -20,6 +20,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.PageTitle;
 import com.example.application.views.main.MainView;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +73,13 @@ public class MovimientosView extends HorizontalLayout {
 
 
 
+
+    }
+    @PostConstruct
+    public void init() {
+
+        List<Movimiento> movimientosList = new ArrayList<>();
+        ListDataProvider<Movimiento> movimientosProvider;
 
     }
 
