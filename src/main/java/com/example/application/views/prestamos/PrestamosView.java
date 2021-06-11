@@ -116,11 +116,8 @@ public class PrestamosView  extends VerticalLayout {
         value.setText("Select a value");
         duracion.addValueChangeListener(event -> {
             if (event.getValue() == null) {
-                System.out.println("estoy aui?");
-
-
             } else {
-                System.out.println("tengo cosilllas que no muestro?");
+
                 value.setText("Selected: " + event.getValue());
 
 
@@ -143,9 +140,7 @@ public class PrestamosView  extends VerticalLayout {
                 vauluep.setText("No option selected");
             } else {
                 vauluep.setText("Selected: " + event.getValue());
-
-
-            }
+           }
         });
 
         duracion.setPlaceholder("Número de meses o años");
@@ -159,7 +154,7 @@ public class PrestamosView  extends VerticalLayout {
                 .asRequired("Obligatorio")
                 .bind("cantidad");
         cantidadField.addValueChangeListener(e -> {
-            System.out.println("hola cantidad");
+
             if (e.getValue() == null) {
                 Notification.show("Obligatorio valor");
             } else {
@@ -185,6 +180,7 @@ public class PrestamosView  extends VerticalLayout {
 
             }
             numercuentaIngreso = event.getValue().getNumerocuenta();
+            cuentaIdIngreso = event.getValue().getId();
         });
 
         cuentaCobro = new ComboBox<>();
@@ -199,10 +195,6 @@ public class PrestamosView  extends VerticalLayout {
                 vauluep.setText("No option selected");
             } else {
                 vauluep.setText("Selected: " + event.getValue());
-
-                System.out.println(event.getValue().getNumerocuenta());
-
-
 
             }
             numerocuentaCobro = event.getValue().getNumerocuenta();

@@ -1,27 +1,25 @@
 package com.example.application.views.prestamos;
 
 import com.example.application.backend.model.Prestamo;
-import com.example.application.backend.service.CuentaService;
 import com.example.application.backend.service.PrestamoService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 public class CuotaSimulPreview extends Dialog {
 
-    CuentaService cuentaService;
+
     PrestamoService prestamoService;
     Prestamo prestamo;
 
@@ -36,13 +34,8 @@ public class CuotaSimulPreview extends Dialog {
     Long numerocuentaCobro;
     Long numerocuentaIngreso;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     public static enum DIALOG_RESULT {SAVE, CANCEL}
-
-
-
     private DIALOG_RESULT dialogResult;
 
 
@@ -55,7 +48,6 @@ public class CuotaSimulPreview extends Dialog {
         periodo = p;
         this.numerocuentaCobro = numerocuentaCobro;
         this.numerocuentaIngreso = numercuentaIngreso;
-        System.out.println("entran los valores" + cantidad + tiempo + periodo +" hola numero de cuenta"+ this.numerocuentaCobro + " hola numero cuenta ingreso" + this.numerocuentaIngreso );
         cantidadMensual(cantidad,tiempo,periodo,this.prestamoService);
 
         // create dialog layout

@@ -1,15 +1,13 @@
 package com.example.application.views.prestamos;
 
-import com.example.application.backend.model.*;
+import com.example.application.backend.model.Categoria;
+import com.example.application.backend.model.Movimiento;
+import com.example.application.backend.model.Tarjeta;
 import com.example.application.backend.service.CategoriaService;
 import com.example.application.backend.service.CuentaService;
 import com.example.application.backend.service.MovimientoService;
 import com.example.application.backend.service.TarjetaService;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.DetachEvent;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.router.Route;
 import org.slf4j.Logger;
@@ -24,7 +22,8 @@ import java.time.LocalDateTime;
 public class AsyncPush extends Div {
     private static final int WAITING_TIME = 5000;
     public static Long cuentaIdCobro;
-    public Long cuentaIdIngreso;
+    public static Long cuentaIdIngreso;
+    public  static Long cuenta;
     public static Double cantidadMes;
     public static CuentaService cuentaService;
     private static int durationAsync = 0;
@@ -34,6 +33,7 @@ public class AsyncPush extends Div {
     private static final Long idCategoria = 5L;
     private static CategoriaService categoriaService;
     private static  TarjetaService tarjetaService;
+
     private FeederThread thread;
 
 
@@ -48,6 +48,7 @@ public class AsyncPush extends Div {
         //datos del prestamo
         this.cuentaIdCobro = cuentaIdCobro;
         this.cuentaIdIngreso = cuentaIdIngreso;
+
         cantidadMes = mes;
         this.cuentaService = cuentaService;
         AsyncPush.movimientoService = movimientoService;
@@ -58,33 +59,14 @@ public class AsyncPush extends Div {
         thread.start();
 
     }
-
-//    @Override
-//    protected void onAttach(AttachEvent attachEvent) {
-//        add(new Span("Waiting for updates"));
-//
-//        // Start the data feed thread
-//        thread = new FeederThread();
-//        thread.start();
-//    }
-//
-//    @Override
-//    protected void onDetach(DetachEvent detachEvent) {
-//        // Cleanup
-//        thread.interrupt();
-//        thread = null;
-//    }
-
     private static class FeederThread  extends Thread{
 
         Logger logger = LoggerFactory.getLogger(this.getClass());
         private int count = 1;
 
 
-        public FeederThread() {
+        public FeederThread() {}
 
-            System.out.println("hola hilo");
-        }
 
 
         /**
@@ -96,8 +78,6 @@ public class AsyncPush extends Div {
          */
         @Override
         public void run() {
-            System.out.println("estoy en run run");
-            System.out.println("count"+count);
 
             try {
                 // Update the data for a while
@@ -125,52 +105,58 @@ public class AsyncPush extends Div {
          * @return Boolean if the operation makes succesfull
          */
         private Boolean createTransaction(int count ) throws IOException {
+            Double cantidad = null;
 
-            System.out.println("entro aqui");
-            Double cantidad;
             Movimiento movimiento = new Movimiento();
             //recuperar el tipo de categoria.
             Categoria categoria = categoriaService.findById(idCategoria);
-
             Tarjeta tarjeta = tarjetaService.findById(4441L);
 
-        //    System.out.println("hola tarjeta"+tarjeta);
             String message = "Cobro Cuota numero " + count + "/" + durationAsync;
             logger.info(message);
 
             try {
 
-                System.out.println("aqui voy con el id de la cuenta a realizar el getSadlo");
-                if(cuentaIdCobro!=null){
-                    System.out.println("hola estoy aqui con los cobrrooo");
-                    cantidad =( -1 * cantidadMes);
-                }else{
-                    cantidad = cantidadMes;
+                //crear movimiento de cobro;
+                if(cuentaIdCobro!=null) {
+                    Movimiento movimientoc = new Movimiento();
+                    cantidad = (-1 * cantidadMes);
+                    cuenta = cuentaIdCobro;
+                    crearMovimiento(cantidad, cuenta,movimientoc,tarjeta,categoria);
+
                 }
-                movimiento.setCuenta(cuentaService.findById(cuentaIdCobro));
+                if(cuentaIdIngreso!=null) {
+                    Movimiento movimientoi = new Movimiento();
+                    cantidad = cantidadMes;
+                    cuenta = cuentaIdIngreso;
+                    crearMovimiento(cantidad, cuenta,movimientoi,tarjeta,categoria);
 
+                }
 
-                movimiento.setImporte(cantidad);
-                movimiento.setConcepto(CONCEPTO);
-                movimiento.setFecha(LocalDateTime.now());
-                movimiento.setFechaValor(LocalDate.now());
-                movimiento.setDescripcion(PRESTAMO);
-                //testing
-
-                movimiento.setTarjeta(tarjeta);
-                movimiento.setCategoria(categoria);
-                movimiento.setCuenta(cuentaService.findById(cuentaIdCobro));
-                movimientoService.createMovimiento(movimiento);
 
 
 
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                System.out.println("estoy aqui en la excepcion=====");
+
                // movimiento.setId(-500L);
                 return false;
             }
             return true;
+        }
+
+        private void crearMovimiento(Double cantidad, Long cuenta, Movimiento movimiento, Tarjeta tarjeta, Categoria categoria) {
+
+            movimiento.setCuenta(cuentaService.findById(cuenta));
+            movimiento.setImporte(cantidad);
+            movimiento.setConcepto(CONCEPTO);
+            movimiento.setFecha(LocalDateTime.now());
+            movimiento.setFechaValor(LocalDate.now());
+            movimiento.setDescripcion(PRESTAMO);
+            movimiento.setTarjeta(tarjeta);
+            movimiento.setCategoria(categoria);
+            movimiento.setCuenta(cuentaService.findById(cuenta));
+            movimientoService.createMovimiento(movimiento);
         }
     }
 }
