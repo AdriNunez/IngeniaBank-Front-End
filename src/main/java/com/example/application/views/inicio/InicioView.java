@@ -125,8 +125,9 @@ public class InicioView extends VerticalLayout {
         add(new Hr());
         for (Tarjeta tarjeta : this.tarjetas) {
 
-            horizontalLayout.add(new CardTarjeta(tarjeta, this.tarjetaService, this.movimientoService));
-
+            if(tarjeta.getNumeroTarjeta()!=4441){
+                horizontalLayout.add(new CardTarjeta(tarjeta, this.tarjetaService, this.movimientoService));
+            }
         }
 
         return horizontalLayout;

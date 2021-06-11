@@ -55,8 +55,11 @@ public class TarjetasView extends HorizontalLayout  {
         add(new Hr());
         for (Tarjeta tarjeta : this.tarjetas) {
 
+
+            if(tarjeta.getNumeroTarjeta()!=4441){
             horizontalLayout.add(new CardTarjeta(tarjeta, this.tarjetaService, this.movimientoService));
 
+                }
         }
 
         return horizontalLayout;
